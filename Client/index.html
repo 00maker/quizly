@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quiz.ly</title>
+        <link rel="stylesheet" href="styles/main.css">
+        <script src="scripts/main.js" type="module"></script>
+    </head>
+    <body>
+    <div class="quiz-list">
+        <div class="header">
+            Avaliable quzzies
+            <a href="?create" class="btn">Create new</a>
+        </div>
+        <div id="quizlist" class="list animated" hidden>
+            <div class="empty">
+                <div>There are no quizzies.</div>
+                <img src="img/emptylist.png" />
+                <div id="createQuizText">
+                    You can create one <a href="?create">here</a>.
+                </div>
+            </div>
+        </div>
+        <div id="quizlist-loading" class="list animated">
+            <a href="#" class="quiz-item placeholder"><img /><span>Item 1</span></a>
+            <a href="#" class="quiz-item placeholder"><img /><span>Item 2</span></a>
+            <a href="#" class="quiz-item placeholder"><img /><span>Item 3</span></a>
+            <a href="#" class="quiz-item placeholder"><img /><span>Item 4</span></a>
+        </div>
+    </div>
+
+    <div class="quiz">
+        <div class="header">
+            <div class="title">Quiz</div>
+            <img src="" />
+        </div>
+        <div class="question-container page animated">
+            <div class="question-header">
+                <div class="question"></div>
+                <div class="hint">(1 of 2 selected)</div>
+            </div>
+            <div class="answers answers-container"></div>
+            <button id="btn-next" class="btn">Next</button>
+        </div>
+        <form id="finished-quiz" method="dialog" class="animated">
+            <div class="title">Congratulations!</div>
+            <div class="count"><span>10</span> out of <span>10</span></div>
+            <div class="description">
+                <div class="bar"></div>
+                <input id="username-input" name="username" placeholder="Please input your name" />
+            </div>
+            <button id="submitResults">Submit results</button>
+        </form>
+        <div id="leaderboard" class="animated">
+            <div class="title">Leaderboard</div>
+            <div class="list">
+                <div class="leaderboard-item placeholder">
+                    <div class="left">
+                        <div class="index"></div>
+                        <div class="username"></div>
+                    </div>
+                    <div class="correct-answers"></div>
+                </div>
+                <div class="leaderboard-item placeholder">
+                    <div class="left">
+                        <div class="index"></div>
+                        <div class="username"></div>
+                    </div>
+                    <div class="correct-answers"></div>
+                </div>
+                <div class="leaderboard-item placeholder">
+                    <div class="left">
+                        <div class="index"></div>
+                        <div class="username"></div>
+                    </div>
+                    <div class="correct-answers"></div>
+                </div>
+                <div class="leaderboard-item placeholder">
+                    <div class="left">
+                        <div class="index"></div>
+                        <div class="username"></div>
+                    </div>
+                    <div class="correct-answers"></div>
+                </div>
+                <div class="leaderboard-item placeholder">
+                    <div class="left">
+                        <div class="index"></div>
+                        <div class="username"></div>
+                    </div>
+                    <div class="correct-answers"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="create-quiz">
+        <div class="header">
+            <div class="title">Create quiz</div>
+            <div class="count" id="currentQuestion">(1 of 10)</div>
+        </div>
+        <div class="form">
+            <div class="container">
+                <input id="title" placeholder="Title"/>
+                <button id="btn-createDone" class="btn success">Done</button>
+            </div>
+            <div class="answers-container page">
+                <div class="answers">
+                    <textarea id="question" placeholder="Question"></textarea>
+                    <div class="input">
+                        <input id="answerCorrect1" type="checkbox" class="css-checkbox"/>
+                        <input id="answer1" class="answer" placeholder="1st Answer"/>
+                    </div>
+                    <div class="input">
+                        <input id="answerCorrect2" type="checkbox"/>
+                        <input id="answer2" class="answer" placeholder="2nd Answer"/>
+                    </div>
+                    <div class="input">
+                        <input id="answerCorrect3" type="checkbox"/>
+                        <input id="answer3" class="answer" placeholder="3rd Answer"/>
+                    </div>
+                    <div class="input">
+                        <input id="answerCorrect4" type="checkbox"/>
+                        <input id="answer4" class="answer" placeholder="4th Answer"/>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button id="btn-createPrev" class="btn">Prev</button>
+                    <button id="btn-createAdd" class="btn success">Add</button>
+                    <button id="btn-createNext" class="btn">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dark-overlay" hide>
+        <div id="submit-dialog" class="modal animated" hidden>
+            <div class="modal-body">
+                <div id="submitQuizTitle">Submit Quiz</div>
+                <div class="url-input">
+                    <span id="url"></span>
+                    <input id="quizUri" placeholder="{id}"/>
+                </div>
+                <div class="input">
+                    <input id="author" placeholder="Your name"/>
+                </div>
+                <div class="btn-container">
+                    <button id="cancelButton" class="btn">Cancel</button>
+                    <button id="submitButton" class="btn success">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-bubble" class="animated hidden">
+        <img class="icon" src=""/>
+        <div class="text-container">
+            <div class="title">Error!</div>
+            <div class="message">
+                This is a notification
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">Мирослав Егерић 17105 @ ЕЛЕКТРОНСКИ ФАКУЛТЕТ У НИШУ. ПРОЈЕКАТ ИЗ ВЕБ ПРОГРАМИРАЊА</div>
+</body>
+</html>
