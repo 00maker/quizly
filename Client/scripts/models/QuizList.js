@@ -20,7 +20,7 @@ export class QuizList {
             this.parent.appendChild(item);
         }
 
-        fetch(`${document.apiUrl}/quiz`, {
+        await fetch(`${document.apiUrl}/quiz`, {
             method: 'GET',
         }).then(async response => {
             const data = await response.json();
@@ -33,10 +33,5 @@ export class QuizList {
             document.notification.Show("Couldn't load", "Error occured when loading quizzies.", "error", 5000);
             console.error(reason);
         });
-        // <a href="#" class="quiz-item placeholder"><img /><span>Item 1</span></a>
-    }
-
-    CreateEmptyState() {
-
     }
 }

@@ -105,6 +105,10 @@ input {
     transition-duration: 200ms;
 }
 
+.btn.danger {
+    background-color: var(--wrong-color) !important;
+}
+
 .btn.success {
     background-color: var(--corect-color) !important;
 }
@@ -359,7 +363,7 @@ textarea::placeholder {
 
 .header {
     position: absolute;
-    top: -70px;
+    top: -40px;
     font-weight: bolder;
     font-size: 30px;
     color: white;
@@ -531,15 +535,23 @@ a.btn {
 }
 
 .btn {
-    height: 40px;
-    padding: 16px 32px;
+    height: 30px;
     border-radius: 16px;
+    padding: 16px 20px;
     background-color: orange !important;
     border: 0;
     color: white;
     font-weight: bold;
     font-size: 16px;
     transition-duration: .2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.btn img {
+    height: 25px;
+    width: 25px ;
 }
 
 .btn:hover {
@@ -688,10 +700,9 @@ a.btn {
     box-shadow: 0 0 10px #32323232;
     position: relative;
     width: 90vw;
-    height: 75vh;
     display: flex;
     flex-direction: column;
-    padding: 30px 0;
+    padding: 30px 0 10px 0;
 }
 
 .create-quiz .count {
@@ -701,7 +712,6 @@ a.btn {
 }
 
 .create-quiz .form {
-    height: 100%;
     padding: 10px 0;
     display: flex;
     flex-direction: column;
@@ -710,7 +720,7 @@ a.btn {
 }
 
 .create-quiz .form > * {
-    width: 85%;
+    width: 80%;
 }
 
 .create-quiz .form input,
@@ -746,13 +756,14 @@ a.btn {
     flex-direction: column;
     background-color: #0000000A;
     border-radius: 25px;
+    overflow: hidden;
 }
 
 .create-quiz .answers-container > .answers {
     padding: 30px;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-evenly;
     height: 100%;
 }
 
@@ -797,11 +808,29 @@ a.btn {
     box-shadow: 0 0 50px  #00000032 !important;
 }
 
-.create-quiz .btn-container {
+.btn-container {
+    margin-top: 20px;
+    border-radius: 25px;
     display: flex;
     justify-content: space-around;
-    margin-bottom: 30px;
     position: relative;
+}
+
+.btn-container > * {
+    border-radius: 0;
+    flex: 1;
+    margin: 5px;
+    height: 25px;
+    margin-top: -15px;
+    padding: 20px 0;
+}
+
+.btn-container > *:last-child {
+    border-radius: 0 15px 15px 0;
+}
+
+.btn-container > *:first-child {
+    border-radius: 15px 0 0 15px;
 }
 
 .modal {
@@ -854,17 +883,18 @@ a.btn {
     display: flex;
     align-items: center;
     background-color: #00000010;
-    width: calc(100% - 32px);
 }
 
 .url-input input {
+    display: inline;
     font-size: 20px;
     line-height: 30px;
     vertical-align: text-bottom;
-    width: 100px;
     color: var(--darker-background-color);
     font-weight: bold;
-    background: none;
+    background-color: #ffffff99;
+    border-radius: inherit;
+    padding: 0 20px;
 }
 
 #leaderboard {
@@ -1001,6 +1031,7 @@ a.btn {
     }
 
     .header {
+        top: -70px;
         font-size: 40px;
     }
 
@@ -1011,7 +1042,7 @@ a.btn {
 
     .quiz > .btn {
         margin-top: 24px;
-        height: 50px;
+        height: 30px;
     }
 
     .quiz-list .quiz-item {
@@ -1025,16 +1056,16 @@ a.btn {
 
     .btn {
         font-size: 20px;
-        height: 60px;
+        padding: 25px 20px;
     }
 
     .create-quiz {
-        width: 50vw;
-        height: 80vh;
+        width: 60vw;
     }
 
     .create-quiz .form .input { 
         margin-top: 15px;
+        height: 40px !important;
     }
 
     .create-quiz .form #title {
@@ -1043,13 +1074,17 @@ a.btn {
         width: unset;
     }
 
+    .create-quiz .answers-container {
+        height: 50vh;
+    }
+
     .modal-body {
         height: 30%;
         width: 30%;
     }
 
     #submit-dialog #quizUri {
-        width: auto;
+        flex: 1;
     }
 
     #leaderboard .title {
@@ -1096,7 +1131,6 @@ a.btn {
     }
 
     .create-quiz {
-        height: 75vh;
         width: 40vw;
     }
 }

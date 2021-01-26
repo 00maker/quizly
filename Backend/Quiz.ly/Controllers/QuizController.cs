@@ -54,12 +54,14 @@ namespace Quizly.Controllers
         {
             try
             {
-                var quiz = JsonConvert.DeserializeObject<QuizDTO>(value.ToString(), new JsonSerializerSettings {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                });
+                var quiz = JsonConvert.DeserializeObject<QuizDTO>(value.ToString());
+
+                if (string.IsNullOrEmpty(quiz.uri) && quiz.uri.All(x => char.IsLetterOrDigit(x))) throw new Exception("You must specift correct id.\nOnly letters and digits are allowed.");
 
                 if (_repo.Find(x => x.Uri == id) != null)
                     throw new Exception("Quiz with uri specified already exists!");
+
+                if (quiz.questions.Length <= 0) throw new Exception("Quiz must contain at least one question.");
 
                 _repo.Insert(new Quiz {
                     Name = quiz.title,
@@ -106,6 +108,7 @@ namespace Quizly.Controllers
                     Username = data.username
                 });
 
+                ++quiz.FinishedCount;
                 _repo.Update(quiz);
                 _repo.Commit();
 

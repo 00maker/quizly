@@ -36,6 +36,8 @@ namespace Quizly
 
             app.UseHttpsRedirection();
 
+            app.UseCertificateForwarding();
+
             app.UseCors(builder => builder.WithOrigins("http://127.0.0.1:5500").AllowAnyHeader().AllowAnyMethod());
             app.UseRouting();
 

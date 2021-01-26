@@ -16,15 +16,17 @@ import { Notification } from './Notification.js';
     const quizId = document.location.search.match(/id=(\S*)/);
     const isCreate = document.location.search.match(/\?create/);
     let quizExists = null;
-    if(!isCreate && quizId && quizId[1]) {
+    if(!isCreate && quizId && quizId[1]) 
         quizExists = await ShowQuiz(quizId[1]);
-    }
     
     if(!quizExists){
         if(isCreate)
             ShowQuizCreate(quizId && quizId[1]);
-        else
-            ShowQuizList();
+        else {
+            await ShowQuizList();
+            if(quizExists === false)
+                document.notification.Show('Error', 'Quiz with id specified doesn\'t exist.', 'error', 3000);
+        }
     }
 
     quizListEl.setAttribute('style',`display: ${!isCreate && (quizId === null || !quizExists) ? 'block' : 'none'};`);

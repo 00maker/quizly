@@ -1,4 +1,5 @@
 import { animate, overlay } from "../animation.js";
+import { ValidateQuiz, ValidateQuestion } from "../validation.js";
 
 export class CreateQuiz {
     constructor(parent, id = null) {
@@ -7,7 +8,7 @@ export class CreateQuiz {
 
         this.id = id;
         this.currentQuestionIndex = 0;
-        this.questions = [this.NewQuestion()];
+        this.questions = [];
 
         this.countEl = this.parent.querySelector('#currentQuestion');
         
@@ -20,14 +21,17 @@ export class CreateQuiz {
 
         this.btnPrev = this.parent.querySelector('#btn-createPrev');
         this.btnAdd = this.parent.querySelector('#btn-createAdd');
+        this.btnRemove = this.parent.querySelector('#btn-createDelete');
         this.btnNext = this.parent.querySelector('#btn-createNext');
 
         this.btnDone.onclick = () => this.SubmitQuiz();
 
         this.btnPrev.onclick = () => this.SelectQuestion(this.currentQuestionIndex - 1);
-        this.btnNext.onclick = () => this.SelectQuestion(this.currentQuestionIndex + 1);
         this.btnAdd.onclick = () => this.AddQuestion();
-        this.UpdateCount();
+        this.btnRemove.onclick = () => this.RemoveQuestion();
+        this.btnNext.onclick = () => this.SelectQuestion(this.currentQuestionIndex + 1);
+
+        this.AddQuestion();
     }
 
     AddQuestion() {
@@ -36,19 +40,26 @@ export class CreateQuiz {
         this.UpdateCount();
     }
 
-    SelectQuestion(index) {
-        var currentQuestionInput = this.GetQuestionFromInput();
-        var shouldValidate = index > this.currentQuestionIndex;
-        if(index < 0 || index >= this.questions.length || (shouldValidate && !this.ValidateQuestion(currentQuestionInput))) return;
-        console.log('added' + currentQuestionInput + ' to ' + this.currentQuestionIndex);
-        this.questions[this.currentQuestionIndex] = currentQuestionInput;
-        animate(this.answersContainer, this.currentQuestionIndex > index ? 'prev' : 'next', 500);
-        setTimeout(() => { this.UpdateCurrentQuestion(index); }, 250);
+    SelectQuestion(index, saveCurrentInput = true) {
+        if(saveCurrentInput) {
+            const currentQuestionInput = this.GetQuestionFromInput();
+            this.questions[this.currentQuestionIndex] = currentQuestionInput;
+        }
+
+        if(index < 0 || index >= this.questions.length) 
+            return;
+
+        if(index != this.currentQuestionIndex) {
+            animate(this.answersContainer, this.currentQuestionIndex > index ? 'prev' : 'next', 500);
+            setTimeout(() => { this.UpdateCurrentQuestion(index); }, 250);
+        }
+
         this.currentQuestionIndex = index;
         this.UpdateCount();
     }
 
     UpdateCurrentQuestion(index) {
+        if(index === undefined) return;
         this.questionInput.value = this.questions[index].question;
 
         this.answersInputs.forEach((x,i) => {
@@ -69,14 +80,14 @@ export class CreateQuiz {
         };
     }
 
-    ValidateQuestion(question){
-        if(!question) return false;
-        if(!question.question || question.question.length < 2) return false;
-        if(!question.answers) return false;
-        if(question.answers.length != 4) return false;
-        const correctAnswersCount = question.answers.filter(x => x.isCorrect).length;
-        if(correctAnswersCount > 3 || correctAnswersCount < 1) return false;
-        return true;
+    RemoveQuestion() {
+        this.questions.splice(this.currentQuestionIndex, 1);
+        if(this.questions.length === 0) 
+            this.questions.push(this.NewQuestion());
+        const selectQuestionIndex = this.currentQuestionIndex - (this.currentQuestionIndex == this.questions.length ? 1 : 0);
+        this.SelectQuestion(selectQuestionIndex, false);
+        this.UpdateCurrentQuestion(selectQuestionIndex);
+        this.UpdateCount();
     }
 
     GetQuestionFromInput() {
@@ -96,45 +107,54 @@ export class CreateQuiz {
     }
 
     async SubmitQuiz() {
-        var dialogResult = await this.ShowSubmitQuizDialog();
-        if(!dialogResult) return;
+        this.SelectQuestion(this.currentQuestionIndex);
+        await this.ShowSubmitQuizDialog().then(async data => {
+            const { author, uri } = data;
+            const quiz = {
+                title: this.titleInput.value,
+                author: author,
+                uri: uri || this.id,
+                questions: this.questions
+            };
 
-        const { author, uri } = dialogResult;
-        console.log(uri + " " + author);
-        const quiz = {
-            title: this.titleInput.value,
-            author: author,
-            uri: uri || this.id,
-            questions: this.questions
-        };
-        if(!this.ValidateQuiz(quiz)) return false;
-
-        console.log(quiz);
-        return fetch(`${document.apiUrl}/quiz/create/${quiz.uri}`, {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            redirect: 'follow',
-            body: JSON.stringify(quiz)
-        }).then(async response => {
-            console.log(response);
-            document.notification.Show("Succes", "Your quiz is successfully created.\nYou will now be redirected to it.", "success", 5000);
-            setTimeout(() => {
-                document.location.replace(`?id=${quiz.uri}`);
-            }, 5000);
-            return response.json();
+            try {
+                ValidateQuiz(quiz, async () => {
+                    const response = await fetch(`${document.apiUrl}/quiz/create/${quiz.uri}`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        redirect: 'follow',
+                        body: JSON.stringify(quiz)
+                    });
+                    var result = await response.json();
+                    console.log(result);
+                    if (!result.success)
+                        throw new Error(result.error);
+                    document.notification.Show("Success", "Your quiz is successfully created.\nYou will now be redirected to it.", "success", 5000);
+                    setTimeout(() => {
+                        document.location.replace(`?id=${quiz.uri}`);
+                    }, 5000);
+                    return result;
+                }, (error, questionIndex) => {
+                    if(questionIndex) this.SelectQuestion(questionIndex);
+                    document.notification.Show("Error!", error.message, 'error', 2000);
+                });                
+            } catch (reason) {
+                console.error(reason);
+                return { error: reason };
+            }
         }).catch(reason => {
-            document.notification.Show("Error!", reason, icon = "icons/error", type = 'notification-error', 2000);
-            console.error(reason);
-            return { error: reason };
+            if(reason){
+                document.notification.Show("Error!", reason, 'error', 2000);
+                console.error(reason);
+            }
         });
     }
 
     ShowSubmitQuizDialog() {
         return new Promise((resolve, reject) => {
-            console.log('show');
             overlay(false);
             var dialog = document.querySelector('#submit-dialog');
             dialog.removeAttribute('hidden');
@@ -142,28 +162,24 @@ export class CreateQuiz {
             dialog.querySelector('#quizUri').value = this.id.toString();
             dialog.querySelector('#cancelButton').onclick = () => {
                 overlay(true);
-                console.log('close');
                 dialog.setAttribute('hidden', null);
                 reject();
             };
             
             dialog.querySelector('#submitButton').onclick = () => {
-                const uri = dialog.querySelector('#quizUri').value;
-                const author = dialog.querySelector('#author').value;
-                
-                if(!uri) reject('You must enter quiz id');
-                if(!author) reject('You must enter username!');
-
-                resolve({uri, author});
+                try {
+                    const uri = dialog.querySelector('#quizUri').value;
+                    const author = dialog.querySelector('#author').value;
+                    
+                    if(!uri) throw new Error('You must enter quiz id');
+                    if(!author) throw new Error('You must enter username!');
+                    overlay(true);
+                    dialog.setAttribute('hidden', null);
+                    resolve({uri, author });
+                } catch (err) {
+                    document.notification.Show("Error!", err, 'error', 2000);
+                }
             }
         });
-    }
-
-    ValidateQuiz(quiz){
-        if(!quiz) return false;
-        if(!quiz.title || quiz.length < 4) return false;
-        if(!quiz.questions || quiz.questions.length < 1) return false;
-        quiz.questions = quiz.questions.filter(this.ValidateQuestion);
-        return true;
     }
 }

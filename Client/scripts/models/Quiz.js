@@ -16,8 +16,7 @@ export class Quiz
         this.leaderboard = new Leaderboard(this.parent.parentNode.querySelector('#leaderboard'), this.quizId);
         this.leaderboard.Hide();
 
-        let success;
-        await fetch(`${document.apiUrl}/quiz/${this.quizId.toString()}`, {
+        return await fetch(`${document.apiUrl}/quiz/${this.quizId.toString()}`, {
             method: 'GET'
         }).then(async value => {
             const data = await value.json();
@@ -27,14 +26,12 @@ export class Quiz
             this.questions = questions;
             this.LoadQuestion(0);
             document.notification.Show("Success", "Successfully loaded quiz.", "success", 2000);
-            success = true;
+            return true;
         }).catch((reason) => {
+            console.error(reason);
             document.notification.Show("Couldn't load quiz", "Please check id specified or try reloading the page.", "error", 5000);
-            success = false;
+            return false;
         });
-
-        if(success === false) return false;
-        return true;
     }
 
     LoadQuestion(index) {
@@ -96,7 +93,6 @@ export class Quiz
             div.setAttribute('data-correct', x.every(y => y.answer.correct));
             bar.appendChild(div);
         });
-        console.log(this.selectedAnswers);
         const answers = this.selectedAnswers.map(x => x.map(y => y.answer.id));
         quiz.querySelector('#submitResults').onclick = async () => {
             try {
