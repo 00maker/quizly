@@ -6,6 +6,10 @@ import { Notification } from './notification.js';
 (async function(){
     document.apiUrl = 'https://localhost:44323';
 
+    quizListEl.setAttribute('style','display: none;');
+    quizEl.setAttribute('style','display: none;');
+    createQuizEl.setAttribute('style','display: none;');
+    
     const notification = new Notification(document.querySelector('#notification-bubble'));
     document.notification = notification;
 
