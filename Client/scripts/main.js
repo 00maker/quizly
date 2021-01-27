@@ -12,11 +12,7 @@ import { Notification } from './notification.js';
     const quizListEl = document.querySelector('.quiz-list');
     const quizEl = document.querySelector('.quiz');
     const createQuizEl = document.querySelector('.create-quiz');
-    
-    quizListEl.setAttribute('style','display: none;');
-    quizEl.setAttribute('style','display: none;');
-    createQuizEl.setAttribute('style','display: none;');
-    
+        
     const quizId = document.location.search.match(/id=(\S*)/);
     const isCreate = document.location.search.match(/\?create/);
     let quizExists = null;
@@ -24,6 +20,9 @@ import { Notification } from './notification.js';
         quizExists = await ShowQuiz(quizId[1]);
     
     if(!quizExists){
+        quizEl.setAttribute('style','display: none;');
+        createQuizEl.setAttribute('style','display: none;');
+
         if(isCreate)
             ShowQuizCreate(quizId && quizId[1]);
         else {
