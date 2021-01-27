@@ -16,8 +16,12 @@ import { Notification } from './notification.js';
     const quizId = document.location.search.match(/id=(\S*)/);
     const isCreate = document.location.search.match(/\?create/);
     let quizExists = null;
-    if(!isCreate && quizId && quizId[1]) 
+    if(!isCreate && quizId && quizId[1]) {
+        createQuizEl.setAttribute('style','display: none;');
+        quizListEl.setAttribute('style','display: none;');
+        quizEl.setAttribute('style','display: none;');
         quizExists = await ShowQuiz(quizId[1]);
+    }
     
     if(!quizExists){
         quizEl.setAttribute('style','display: none;');
