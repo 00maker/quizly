@@ -5,10 +5,6 @@ import { Notification } from './notification.js';
 
 (async function(){
     document.apiUrl = 'https://localhost:44323';
-
-    quizListEl.setAttribute('style','display: none;');
-    quizEl.setAttribute('style','display: none;');
-    createQuizEl.setAttribute('style','display: none;');
     
     const notification = new Notification(document.querySelector('#notification-bubble'));
     document.notification = notification;
@@ -16,6 +12,10 @@ import { Notification } from './notification.js';
     const quizListEl = document.querySelector('.quiz-list');
     const quizEl = document.querySelector('.quiz');
     const createQuizEl = document.querySelector('.create-quiz');
+    
+    quizListEl.setAttribute('style','display: none;');
+    quizEl.setAttribute('style','display: none;');
+    createQuizEl.setAttribute('style','display: none;');
     
     const quizId = document.location.search.match(/id=(\S*)/);
     const isCreate = document.location.search.match(/\?create/);
