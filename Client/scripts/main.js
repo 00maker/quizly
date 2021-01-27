@@ -1,7 +1,7 @@
 import { CreateQuiz } from './models/CreateQuiz.js';
 import { Quiz } from './models/Quiz.js'
 import { QuizList } from './models/QuizList.js'
-import { Notification } from './Notification.js';
+import { Notification } from './notification.js';
 
 (async function(){
     document.apiUrl = 'https://localhost:44323';
