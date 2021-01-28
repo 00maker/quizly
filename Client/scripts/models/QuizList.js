@@ -28,9 +28,9 @@ export class QuizList {
             this.parent.toggleAttribute('hidden');
             if(data.length > 0) this.parent.innerHTML = '';
             data.forEach(addItem);
-            document.notification.Show("Success", "Successfully loaded quizzies.", "success", 2000);
+            document.notification.Show("Success", "Successfully loaded quizzes.", "success", 2000);
         }).catch(reason => {
-            document.notification.Show("Couldn't load", "Error occured when loading quizzies.", "error", 5000);
+            document.notification.Show("Couldn't load", "Error occured when loading quizzes.", "error", 5000);
             console.error(reason);
         });
     }
