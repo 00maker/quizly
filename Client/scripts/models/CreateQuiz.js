@@ -108,17 +108,20 @@ export class CreateQuiz {
 
     async SubmitQuiz() {
         this.SelectQuestion(this.currentQuestionIndex);
-        await this.ShowSubmitQuizDialog().then(async data => {
-            const { author, uri } = data;
-            const quiz = {
+        try {
+            let quiz = {
                 title: this.titleInput.value,
-                author: author,
-                uri: uri || this.id,
+                uri: this.id,
                 questions: this.questions
             };
 
-            try {
-                ValidateQuiz(quiz, async () => {
+            ValidateQuiz(quiz, async () => {
+                await this.ShowSubmitQuizDialog().then(async data => {
+                    const { author, uri } = data;
+
+                    quiz.author = author;
+                    quiz.uri ||= uri;
+
                     const response = await fetch(`${document.apiUrl}/quiz/create/${quiz.uri}`, {
                         method: 'POST',
                         mode: 'cors',
@@ -128,6 +131,7 @@ export class CreateQuiz {
                         redirect: 'follow',
                         body: JSON.stringify(quiz)
                     });
+
                     var result = await response.json();
                     console.log(result);
                     if (!result.success)
@@ -136,21 +140,17 @@ export class CreateQuiz {
                     setTimeout(() => {
                         document.location.replace(`?id=${quiz.uri}`);
                     }, 5000);
-                    return result;
-                }, (error, questionIndex) => {
-                    if(questionIndex) this.SelectQuestion(questionIndex);
-                    document.notification.Show("Error!", error.message, 'error', 2000);
-                });                
-            } catch (reason) {
-                console.error(reason);
-                return { error: reason };
-            }
-        }).catch(reason => {
-            if(reason){
-                document.notification.Show("Error!", reason, 'error', 2000);
-                console.error(reason);
-            }
-        });
+                    return result;               
+                }); 
+            }, (error, questionIndex) => {
+                console.log(questionIndex);
+                if(questionIndex !== undefined) this.SelectQuestion(questionIndex);
+                document.notification.Show("Error!", error.message, 'error', 2000);
+            });
+        } catch (reason) {
+            console.error(reason);
+            return { error: reason };
+        }
     }
 
     ShowSubmitQuizDialog() {

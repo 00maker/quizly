@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Pipelines;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Models;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -121,31 +124,24 @@ namespace Quizly.Controllers
         }
 
         [HttpPut("{id}")]
-        public JsonResult Put(string id, [FromBody] string value)
+        public async Task<JsonResult> Put(int id)
         {
             try
             {
-                var quiz = JsonConvert.DeserializeObject<QuizDTO>(value);
+                string newName = null;
+                using (var sr = new StreamReader(Request.Body))
+                    newName = await sr.ReadToEndAsync();
 
-                if (_repo.Find(x => x.Uri == id) != null)
-                    throw new Exception("Quiz with uri specified already exists!");
+                var quiz = _repo.GetById(id);
+                if (quiz == null)
+                    throw new Exception("Quiz with uri specified doesn't exists!");
 
-                _repo.Insert(new Quiz
-                {
-                    Name = quiz.title,
-                    Author = quiz.author,
-                    Uri = quiz.uri,
-                    Questions = quiz.questions.Select(x => new Question
-                    {
-                        Text = x.question,
-                        IsMultiSelect = x.answers.Count(x => x.isCorrect) > 1,
-                        Answers = x.answers.Select(y => new Answer
-                        {
-                            Correct = y.isCorrect,
-                            Text = y.answer,
-                        }).ToArray(),
-                    }).ToArray()
-                });
+                if (string.IsNullOrEmpty(newName))
+                    throw new Exception("Name shouldn't be empty!");
+
+                _repo.Update(quiz).Name = newName;
+                _repo.Commit();
+                
                 return new JsonResult(new { success = true });
             }
             catch (Exception e)
@@ -155,11 +151,12 @@ namespace Quizly.Controllers
         }
 
         [HttpDelete("{id}")]
-        public JsonResult Delete(string id)
+        public JsonResult Delete(int id)
         {
             try
             {
-                var quiz = _repo.Find(x => x.Uri == id);
+                var quiz = _repo.Find(x => x.Id == id, new string[] { "Questions", "Answers" }, new string[] { "Results" });
+
                 if (quiz == null)
                     throw new Exception("Quiz with uri specified doesn't exist!");
 

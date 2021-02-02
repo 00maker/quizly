@@ -10,7 +10,7 @@ namespace DAL.Interfaces
         T Find(Func<T, bool> x, params string[][] include);
         void Insert(T model);
         void Delete(int id);
-        void Update(T model);
+        T Update(T model);
         void Commit();
     }
 }

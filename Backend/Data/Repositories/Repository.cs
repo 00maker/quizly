@@ -27,7 +27,7 @@ namespace DAL.Repositories
 
         public T GetById(int id) => _context.Set<T>().Find(id);
         public void Delete(int id) => _context.Set<T>().Remove(GetById(id));
-        public void Update(T model) => _context.Set<T>().Attach(model);
+        public T Update(T model) => _context.Set<T>().Attach(model);
         public void Commit() => _context.SaveChanges();
     }
 }

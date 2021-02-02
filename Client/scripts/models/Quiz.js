@@ -96,13 +96,16 @@ export class Quiz
         const answers = this.selectedAnswers.map(x => x.map(y => y.answer.id));
         quiz.querySelector('#submitResults').onclick = async () => {
             try {
-                const username = quiz.querySelector('#username-input').value;
-                console.log('Username' + username);
-                if(!username) return false;
+                const usernameInput = quiz.querySelector('#username-input');
+                if(!usernameInput.value) {
+                    usernameInput.focus();
+                    document.notification.Show("Error", "Please enter your username.", "error", 3000);
+                    return false;
+                }
                 
                 const data = {
                     answerIds: answers,
-                    username
+                    username: usernameInput.value
                 };
                 
                 return await fetch(`${document.apiUrl}/quiz/${this.quizId}`, {
@@ -116,7 +119,7 @@ export class Quiz
                 }).then(async response => {
                     console.log(response);
                     this.parent.parentNode.querySelector('#finished-quiz').classList.add('hidden');
-                    this.leaderboard.Show(username);
+                    this.leaderboard.Show(usernameInput.value);
                     document.notification.Show("Success", "Your result is succesfully saved.", "success", 2000);                    
                     return await response.json();
                 }).catch(reason => {

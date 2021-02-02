@@ -256,6 +256,7 @@ textarea::placeholder {
     font-size: 24px;
     font-weight: bold;
     display: flex;
+    padding: 0 30px;
     align-items: center;
     margin: 20px 30px 0 30px;
     margin-bottom: 50px;
@@ -266,6 +267,7 @@ textarea::placeholder {
     filter: saturate(1.5);
     transition-duration: .3s;
     border: 2px solid var(--darker-background-color);
+    justify-content: space-evenly;
 }
 
 .quiz-list .quiz-item:hover {
@@ -279,20 +281,28 @@ textarea::placeholder {
     box-shadow: none;
 }
 
-.quiz-list .quiz-item div:first-of-type {
-    position: relative;
-    font-size: 30px;
-    margin-right: 60px;
+.quiz-list .quiz-item > div:first-of-type {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 
-.quiz-list .quiz-item div:first-of-type::after {
-    content: 'by';
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: calc(100% + 16px);
-    align-self: end;
-    position: absolute;
+.quiz-list .quiz-item button {
+    margin-right: 15px;
+}
+
+.quiz-list .quiz-item div div:first-of-type {
+    position: relative;
+    font-size: 30px;
+}
+
+.quiz-list .quiz-item button {
+    float:right;
+}
+
+.quiz-list .quiz-item span {
+    margin: 0 20px;
     font-weight: normal;
     opacity: 0.5;
 }
@@ -839,6 +849,17 @@ a.btn {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 30px;
+
+}
+
+.modal #quizName {
+    color: var(--darker-background-color);
+    text-decoration: underline;
+}
+
+.modal[hidden] {
+    display: none;
 }
 
 .modal-body {
